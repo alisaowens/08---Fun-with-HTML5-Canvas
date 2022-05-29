@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+  const canvas = document.querySelector('#draw'); 
+  const ctx = canvas.getContext('2d'); // returns a two-dimensional drawing context on the canvas
+  canvas.width = window.innerWidth; 
+  canvas.height = window.innerHeight; 
+  ctx.strokeStyle = '#000000'; // sets the initial color of the line
+  ctx.lineJoin = 'round'; // makes rounded corners when two line segments join
+  ctx.lineCap = 'round'; // makes rounded corners when line segments end
+  ctx.lineWidth = 100;
+
+  let isDrawing = false; 
+  let lastX = 0; 
+  let lastY = 0; 
+  let hue = 0; 
+  let direction = true; // whether the line is increasing in width 
+
+  function draw(e) {
+    if(!isDrawing) {
+      return; // stop the function from running when mouse is not down 
+    }
+    console.log(e); 
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`; // set the color of the line
+    ctx.beginPath(); 
+    // start from
+    ctx.moveTo(lastX, lastY);
+    // go to
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke(); 
+    [lastX, lastY] = [e.offsetX, e.offsetY]; // destructure the array to set the variables 
+    hue++; // increment the color of the line 
+    if (hue >= 360) {
+      hue = 0; // set hue back to 0 when it reaches 360
+    }
+    if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+      direction = !direction; // change whether the line width is increasing or decreasing 
+    }
+    if (direction) {
+      ctx.lineWidth++; 
+    } else {
+      ctx.lineWidth--; 
+    }
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    isDrawing = true; 
+    [lastX, lastY] = [e.offsetX, e.offsetY]; // destructure the array to set the starting point of the line
+  });
+
+  canvas.addEventListener('mousemove', draw); 
+  canvas.addEventListener('mouseup', () => isDrawing = false); 
+  canvas.addEventListener('mouseout', () => isDrawing = false); 
+
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
